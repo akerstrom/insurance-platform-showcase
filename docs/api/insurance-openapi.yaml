@@ -1,0 +1,50 @@
+openapi: 3.1.0
+info:
+  title: Insurance API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3002
+
+paths:
+  /insurances/{pid}:
+    get:
+      summary: Get insurance policies by Personal Identification Number
+      operationId: getInsurancesByPid
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of insurance policies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Insurance'
+        '404':
+          description: Not found
+
+components:
+  schemas:
+    Insurance:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        pid:
+          type: string
+        type:
+          type: string
+          enum: [Car, Pet, Health]
+        status:
+          type: string
+        premium:
+          type: number
+          description: Monthly premium in USD
+      required: [id, pid, type, status, premium]
