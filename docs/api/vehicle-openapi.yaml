@@ -1,0 +1,45 @@
+openapi: 3.1.0
+info:
+  title: Vehicle API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:5001
+
+paths:
+  /vehicles/{regnr}:
+    get:
+      summary: Get vehicle by registration number
+      operationId: getVehicle
+      parameters:
+        - name: regnr
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Vehicle details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Vehicle'
+        '404':
+          description: Not found
+
+components:
+  schemas:
+    Vehicle:
+      type: object
+      properties:
+        vin:
+          type: string
+        regnr:
+          type: string
+        make:
+          type: string
+        model:
+          type: string
+        year:
+          type: integer
+      required: [vin, regnr, make, model, year]

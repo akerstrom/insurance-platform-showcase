@@ -1,0 +1,68 @@
+openapi: 3.1.0
+info:
+  title: Customer API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:5003
+
+paths:
+  /customers/{pid}/insurances:
+    get:
+      summary: Get customer insurances with vehicle details
+      operationId: getCustomerInsurances
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of customer insurances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CustomerInsurance'
+        '404':
+          description: Customer not found
+
+components:
+  schemas:
+    CustomerInsurance:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        pid:
+          type: string
+        type:
+          type: string
+          enum: [Car, Pet, Health]
+        status:
+          type: string
+        premium:
+          type: number
+          description: Monthly premium in USD
+        vehicle:
+          $ref: '#/components/schemas/Vehicle'
+          description: Vehicle details (only present for Car insurance)
+      required: [id, pid, type, status, premium]
+
+    Vehicle:
+      type: object
+      properties:
+        vin:
+          type: string
+        regnr:
+          type: string
+        make:
+          type: string
+        model:
+          type: string
+        year:
+          type: integer
+      required: [vin, regnr, make, model, year]
