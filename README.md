@@ -1,24 +1,24 @@
 # ThreadPilot Insurance Platform
 
-A service-oriented insurance platform demonstrating architecture patterns, integration design, and clean API design.
+A service-oriented insurance platform demonstrating architecture patterns, integration design, and clean API design using .NET 8 and ASP.NET Core.
 
 ## Architecture Overview
 
 ThreadPilot consists of three microservices:
 
-- **Customer Service** (port 3003) — orchestrator that aggregates data from other services
-- **Insurance Service** (port 3002) — anti-corruption layer around the legacy insurance mainframe
-- **Vehicle Service** (port 3001) — anti-corruption layer around the legacy vehicle database
+- **Customer Service** (port 5003) — orchestrator that aggregates data from other services
+- **Insurance Service** (port 5002) — anti-corruption layer around the legacy insurance mainframe
+- **Vehicle Service** (port 5001) — anti-corruption layer around the legacy vehicle database
 
 ```mermaid
 flowchart LR
-    subgraph Customer API [:3003]
+    subgraph Customer API [:5003]
         C["GET /customers/{pid}/insurances"]
     end
-    subgraph Insurance API [:3002]
+    subgraph Insurance API [:5002]
         I["GET /insurances/{pid}"]
     end
-    subgraph Vehicle API [:3001]
+    subgraph Vehicle API [:5001]
         V["GET /vehicles/{regnr}"]
     end
 
@@ -42,19 +42,19 @@ flowchart LR
 
 ## APIs
 
-### Vehicle API (port 3001)
+### Vehicle API (port 5001)
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/vehicles/{regnr}` | GET | Get vehicle by registration number |
 
-### Insurance API (port 3002)
+### Insurance API (port 5002)
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/insurances/{pid}` | GET | Get insurance policies by personal ID |
 
-### Customer API (port 3003)
+### Customer API (port 5003)
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
@@ -66,11 +66,11 @@ flowchart LR
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `id` | uuid | Yes | Unique identifier |
+| `id` | Guid | Yes | Unique identifier |
 | `pid` | string | Yes | Personal identification number |
 | `type` | enum | Yes | `Car`, `Pet`, or `Health` |
 | `status` | string | Yes | Policy status |
-| `premium` | number | Yes | Monthly premium in USD |
+| `premium` | decimal | Yes | Monthly premium in USD |
 
 ### CustomerInsurance
 
@@ -89,7 +89,7 @@ Extends Insurance with vehicle details for car policies.
 | `regnr` | string | Yes |
 | `make` | string | Yes |
 | `model` | string | Yes |
-| `year` | integer | Yes |
+| `year` | int | Yes |
 
 ### Insurance Pricing
 
@@ -103,28 +103,24 @@ Extends Insurance with vehicle details for car policies.
 
 ### Prerequisites
 
-- Node.js 18+
-- npm
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
 ### Start Services
 
 ```bash
-# Install dependencies
-npm install
+# Restore dependencies
+dotnet restore
 
-# Start all services
-npm run dev
-
-# Or start individually
-npm run dev:vehicle   # Port 3001
-npm run dev:insurance # Port 3002
-npm run dev:customer  # Port 3003
+# Start all services (each in separate terminal)
+dotnet run --project src/VehicleService     # Port 5001
+dotnet run --project src/InsuranceService   # Port 5002
+dotnet run --project src/CustomerService    # Port 5003
 ```
 
 ### Run Tests
 
 ```bash
-npm test
+dotnet test
 ```
 
 ## Error Handling
@@ -155,17 +151,17 @@ When the Customer API cannot reach the Vehicle service, it returns insurance dat
 
 The architecture supports future growth:
 
-- **New insurance types** — add to the `type` enum and implement any type-specific enrichment
-- **Additional data sources** — add new services behind the Customer orchestrator
-- **API versioning** — version via URL prefix (`/v1/`, `/v2/`) when breaking changes are needed
+- **New insurance types** — add to the `InsuranceType` enum and implement any type-specific enrichment
+- **Additional data sources** — inject new service clients via dependency injection
+- **API versioning** — use ASP.NET Core API versioning (`/v1/`, `/v2/`) when breaking changes are needed
 - **Real-time vehicle data** — Vehicle service abstraction allows swapping the legacy DB for a live API
 
 ## Security Considerations
 
 - **PID handling** — Personal identification numbers are sensitive; in production, implement field-level encryption and audit logging
 - **Service-to-service auth** — Use mutual TLS or API keys between internal services
-- **Input validation** — All path parameters are validated before use
-- **Rate limiting** — Recommended for production to prevent abuse
+- **Input validation** — All path parameters are validated using data annotations and model binding
+- **Rate limiting** — Use ASP.NET Core rate limiting middleware in production
 
 ## API Specifications
 
