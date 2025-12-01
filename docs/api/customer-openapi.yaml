@@ -4,7 +4,7 @@ info:
   version: 1.0.0
 
 servers:
-  - url: http://localhost:3003
+  - url: http://localhost:5003
 
 paths:
   /customers/{pid}/insurances:

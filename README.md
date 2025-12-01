@@ -1,10 +1,10 @@
-# ThreadPilot Insurance Platform
+# Insurance Integration Layer
 
-A service-oriented insurance platform demonstrating architecture patterns, integration design, and clean API design using .NET 8 and ASP.NET Core.
+An integration layer connecting **ThreadPilot** (a new core insurance system) to legacy backend systems. Built with .NET 8 and ASP.NET Core, demonstrating anti-corruption layers, service orchestration, and clean API design.
 
 ## Architecture Overview
 
-ThreadPilot consists of three microservices:
+This integration layer consists of three microservices that abstract legacy systems and provide a unified API for ThreadPilot:
 
 - **Customer Service** (port 5003) — orchestrator that aggregates data from other services
 - **Insurance Service** (port 5002) — anti-corruption layer around the legacy insurance mainframe
@@ -12,16 +12,21 @@ ThreadPilot consists of three microservices:
 
 ```mermaid
 flowchart LR
-    subgraph Customer API [:5003]
-        C["GET /customers/{pid}/insurances"]
-    end
-    subgraph Insurance API [:5002]
-        I["GET /insurances/{pid}"]
-    end
-    subgraph Vehicle API [:5001]
-        V["GET /vehicles/{regnr}"]
+    TP[ThreadPilot\nCore System]
+
+    subgraph Integration Layer
+        subgraph Customer API [:5003]
+            C["GET /customers/{pid}/insurances"]
+        end
+        subgraph Insurance API [:5002]
+            I["GET /insurances/{pid}"]
+        end
+        subgraph Vehicle API [:5001]
+            V["GET /vehicles/{regnr}"]
+        end
     end
 
+    TP --> C
     C --> I
     C -->|enrich car insurances| V
 
