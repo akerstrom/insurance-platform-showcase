@@ -88,18 +88,44 @@ Simulates the legacy insurance policy mainframe.
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/vehicles/{regnr}` | GET | Get vehicle by registration number |
+| `/health` | GET | Health check |
 
 ### Insurance API (port 5002)
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/insurances/{pid}` | GET | Get insurance policies by personal ID |
+| `/health` | GET | Health check |
+
+**Example response:**
+
+```json
+[
+  {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "pid": "199001011234",
+    "type": "Car",
+    "status": "Active",
+    "premium": 30.00,
+    "regnr": "ABC123"
+  },
+  {
+    "id": "4fa85f64-5717-4562-b3fc-2c963f66afa7",
+    "pid": "199001011234",
+    "type": "Pet",
+    "status": "Active",
+    "premium": 10.00,
+    "regnr": null
+  }
+]
+```
 
 ### Customer API (port 5003)
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
 | `/customers/{pid}/insurances` | GET | Get customer insurances with vehicle details |
+| `/health` | GET | Health check |
 
 ## Data Models
 
@@ -112,6 +138,7 @@ Simulates the legacy insurance policy mainframe.
 | `type` | enum | Yes | `Car`, `Pet`, or `Health` |
 | `status` | string | Yes | Policy status |
 | `premium` | decimal | Yes | Monthly premium in USD |
+| `regnr` | string | No | Vehicle registration number (only for Car insurance) |
 
 ### CustomerInsurance
 
@@ -171,6 +198,10 @@ dotnet run --project src/CustomerService    # Port 5003
 ```bash
 dotnet test
 ```
+
+Currently 15 tests across:
+- `VehicleService.Tests` (6 tests)
+- `InsuranceService.Tests` (9 tests)
 
 ## Error Handling
 
