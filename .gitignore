@@ -6,6 +6,19 @@ dist/
 build/
 *.tsbuildinfo
 
+# .NET build output
+bin/
+obj/
+*.dll
+*.pdb
+*.exe
+*.nupkg
+*.user
+*.suo
+*.userprefs
+*.cache
+*.lock.json
+
 # Environment files
 .env
 .env.local

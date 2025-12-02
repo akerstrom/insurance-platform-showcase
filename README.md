@@ -45,6 +45,42 @@ flowchart LR
 | **Orchestration** | Customer service composes data from multiple sources, keeping integration logic centralized |
 | **Service separation** | Each service owns its domain, enabling independent deployment and scaling |
 
+## Legacy System Simulators
+
+The `legacy/` folder contains mock implementations of the backend systems that the integration layer connects to. These simulators provide realistic test data without requiring actual legacy infrastructure.
+
+### VehicleDatabase (port 5101)
+
+Simulates the legacy vehicle registration database.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/vehicles/{regnr}` | GET | Get vehicle by registration number |
+
+**Mock data:**
+
+| Regnr | VIN | Make | Model | Year |
+|-------|-----|------|-------|------|
+| ABC123 | WBA3A5C55DF123456 | BMW | 320i | 2019 |
+| XYZ789 | YV1CZ91H841234567 | Volvo | XC60 | 2021 |
+| DEF456 | WVWZZZ3CZWE123456 | Volkswagen | Golf | 2020 |
+
+### InsuranceMainframe (port 5102)
+
+Simulates the legacy insurance policy mainframe.
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/policies/{pid}` | GET | Get policies by personal ID |
+
+**Mock data:**
+
+| PID | Policies |
+|-----|----------|
+| 199001011234 | Car (ABC123), Pet, Health |
+| 198505152345 | Car (XYZ789) |
+| 197212123456 | Pet, Health |
+
 ## APIs
 
 ### Vehicle API (port 5001)
@@ -110,13 +146,21 @@ Extends Insurance with vehicle details for car policies.
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 
-### Start Services
+### Start Legacy Simulators
+
+```bash
+# Start legacy backends (each in separate terminal)
+dotnet run --project legacy/VehicleDatabase      # Port 5101
+dotnet run --project legacy/InsuranceMainframe   # Port 5102
+```
+
+### Start Integration Services
 
 ```bash
 # Restore dependencies
 dotnet restore
 
-# Start all services (each in separate terminal)
+# Start integration layer services (each in separate terminal)
 dotnet run --project src/VehicleService     # Port 5001
 dotnet run --project src/InsuranceService   # Port 5002
 dotnet run --project src/CustomerService    # Port 5003
