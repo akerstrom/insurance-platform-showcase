@@ -24,25 +24,31 @@ public class InsuranceServiceClient : IInsuranceServiceClient
 
     public async Task<IReadOnlyList<InsuranceInfo>> GetInsurancesAsync(string pid, CancellationToken cancellationToken = default)
     {
+        var encodedPid = Uri.EscapeDataString(pid);
+        var requestUrl = $"{_httpClient.BaseAddress}/insurances/{encodedPid}";
+        _logger.LogInformation("Calling InsuranceService: GET {Url}", requestUrl);
+
         try
         {
-            var encodedPid = Uri.EscapeDataString(pid);
             var response = await _httpClient.GetAsync($"/insurances/{encodedPid}", cancellationToken);
+            _logger.LogInformation("InsuranceService responded with {StatusCode}", response.StatusCode);
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
+                _logger.LogInformation("No insurances found for PID {Pid}", pid);
                 return Array.Empty<InsuranceInfo>();
             }
 
             response.EnsureSuccessStatusCode();
 
             var insurances = await response.Content.ReadFromJsonAsync<List<InsuranceDto>>(_jsonOptions, cancellationToken);
+            _logger.LogInformation("Received {Count} insurances for PID {Pid}", insurances?.Count ?? 0, pid);
 
             return insurances?.Select(ToInsuranceInfo).ToList() ?? [];
         }
         catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, "Failed to fetch insurances for PID {Pid} from InsuranceService", pid);
+            _logger.LogError(ex, "Failed to fetch insurances for PID {Pid} from InsuranceService at {Url}", pid, requestUrl);
             throw;
         }
     }

@@ -24,25 +24,31 @@ public class InsuranceMainframeClient : IInsuranceMainframeClient
 
     public async Task<IReadOnlyList<Insurance>> GetInsurancesAsync(string pid, CancellationToken cancellationToken = default)
     {
+        var encodedPid = Uri.EscapeDataString(pid);
+        var requestUrl = $"{_httpClient.BaseAddress}/policies/{encodedPid}";
+        _logger.LogInformation("Calling LegacyMainframe: GET {Url}", requestUrl);
+
         try
         {
-            var encodedPid = Uri.EscapeDataString(pid);
             var response = await _httpClient.GetAsync($"/policies/{encodedPid}", cancellationToken);
+            _logger.LogInformation("LegacyMainframe responded with {StatusCode}", response.StatusCode);
 
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
+                _logger.LogInformation("No policies found for PID {Pid}", pid);
                 return Array.Empty<Insurance>();
             }
 
             response.EnsureSuccessStatusCode();
 
             var legacyPolicies = await response.Content.ReadFromJsonAsync<List<LegacyPolicy>>(_jsonOptions, cancellationToken);
+            _logger.LogInformation("Received {Count} policies from mainframe for PID {Pid}", legacyPolicies?.Count ?? 0, pid);
 
             return legacyPolicies?.Select(TranslateToInsurance).ToList() ?? [];
         }
         catch (HttpRequestException ex)
         {
-            _logger.LogError(ex, "Failed to fetch policies for PID {Pid} from legacy mainframe", pid);
+            _logger.LogError(ex, "Failed to fetch policies for PID {Pid} from legacy mainframe at {Url}", pid, requestUrl);
             throw;
         }
     }
