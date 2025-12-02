@@ -127,6 +127,35 @@ Simulates the legacy insurance policy mainframe.
 | `/customers/{pid}/insurances` | GET | Get customer insurances with vehicle details |
 | `/health` | GET | Health check |
 
+**Example response:**
+
+```json
+[
+  {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "pid": "199001011234",
+    "type": "Car",
+    "status": "Active",
+    "premium": 30.00,
+    "vehicle": {
+      "vin": "WBA3A5C55DF123456",
+      "regnr": "ABC123",
+      "make": "BMW",
+      "model": "320i",
+      "year": 2019
+    }
+  },
+  {
+    "id": "4fa85f64-5717-4562-b3fc-2c963f66afa7",
+    "pid": "199001011234",
+    "type": "Pet",
+    "status": "Active",
+    "premium": 10.00,
+    "vehicle": null
+  }
+]
+```
+
 ## Data Models
 
 ### Insurance
@@ -199,9 +228,10 @@ dotnet run --project src/CustomerService    # Port 5003
 dotnet test
 ```
 
-Currently 15 tests across:
+Currently 28 tests across:
 - `VehicleService.Tests` (6 tests)
 - `InsuranceService.Tests` (9 tests)
+- `CustomerService.Tests` (13 tests)
 
 ## Error Handling
 
