@@ -9,6 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VehicleDatabase", "legacy\V
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InsuranceMainframe", "legacy\InsuranceMainframe\InsuranceMainframe.csproj", "{ECEEF33E-24C0-4CB6-B206-09AED46EC213}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{907F1F54-F792-403C-BDFF-017A7C1DE5BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VehicleService", "src\VehicleService\VehicleService.csproj", "{36A809A1-3F15-4E53-89BB-A9F2BE8991A6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0356E950-B848-407B-952C-640A26C3C098}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VehicleService.Tests", "tests\VehicleService.Tests\VehicleService.Tests.csproj", "{8A4E37AD-BB42-43CA-AA1B-9F150D0594DF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,9 +34,19 @@ Global
 		{ECEEF33E-24C0-4CB6-B206-09AED46EC213}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ECEEF33E-24C0-4CB6-B206-09AED46EC213}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ECEEF33E-24C0-4CB6-B206-09AED46EC213}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36A809A1-3F15-4E53-89BB-A9F2BE8991A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36A809A1-3F15-4E53-89BB-A9F2BE8991A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36A809A1-3F15-4E53-89BB-A9F2BE8991A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36A809A1-3F15-4E53-89BB-A9F2BE8991A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A4E37AD-BB42-43CA-AA1B-9F150D0594DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A4E37AD-BB42-43CA-AA1B-9F150D0594DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A4E37AD-BB42-43CA-AA1B-9F150D0594DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A4E37AD-BB42-43CA-AA1B-9F150D0594DF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EFFDE195-BFB2-4BD5-BDDC-75759CBA009D} = {7353761C-B7FD-4E30-9AF6-DD710DB9C5E2}
 		{ECEEF33E-24C0-4CB6-B206-09AED46EC213} = {7353761C-B7FD-4E30-9AF6-DD710DB9C5E2}
+		{36A809A1-3F15-4E53-89BB-A9F2BE8991A6} = {907F1F54-F792-403C-BDFF-017A7C1DE5BF}
+		{8A4E37AD-BB42-43CA-AA1B-9F150D0594DF} = {0356E950-B848-407B-952C-640A26C3C098}
 	EndGlobalSection
 EndGlobal

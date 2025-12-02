@@ -182,6 +182,8 @@ The APIs use standard HTTP status codes and consistent error responses:
 | 400 | Invalid input (malformed PID, registration number) |
 | 404 | Resource not found |
 | 500 | Internal server error |
+| 503 | Legacy service unavailable |
+| 504 | Legacy service timeout |
 
 ### Error Response Format
 
