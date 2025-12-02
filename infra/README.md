@@ -171,6 +171,33 @@ Internet
 
 All services scale to zero when idle, minimizing costs.
 
+## Health Probes
+
+All container apps are configured with health probes to handle cold start scenarios:
+
+| Probe Type | Path | Initial Delay | Period | Failure Threshold |
+|------------|------|---------------|--------|-------------------|
+| Startup | `/health` | 5s | 3s | 10 |
+| Readiness | `/health` | - | 5s | 3 |
+
+The startup probe allows up to 35 seconds for cold start (5s initial + 10 failures * 3s period).
+
+## Configuration
+
+### HttpClient Timeout
+
+Services use a configurable HttpClient timeout (default: 30s) to handle cold start latency:
+
+```json
+{
+  "HttpClient": {
+    "TimeoutSeconds": 30
+  }
+}
+```
+
+This can be overridden via environment variables: `HttpClient__TimeoutSeconds=60`
+
 ## Clean Up
 
 ```bash

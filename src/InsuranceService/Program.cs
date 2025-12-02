@@ -8,12 +8,14 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+var httpTimeoutSeconds = builder.Configuration.GetValue<int?>("HttpClient:TimeoutSeconds") ?? 30;
+
 builder.Services.AddHttpClient<IInsuranceMainframeClient, InsuranceMainframeClient>(client =>
 {
     var baseUrl = builder.Configuration["LegacyServices:InsuranceMainframe"]
         ?? "http://localhost:5102";
     client.BaseAddress = new Uri(baseUrl);
-    client.Timeout = TimeSpan.FromSeconds(10);
+    client.Timeout = TimeSpan.FromSeconds(httpTimeoutSeconds);
 });
 
 var app = builder.Build();

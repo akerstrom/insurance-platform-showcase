@@ -110,6 +110,27 @@ resource legacyVehicleDb 'Microsoft.App/containerApps@2023-05-01' = {
               value: 'http://+:8080'
             }
           ]
+          probes: [
+            {
+              type: 'startup'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              initialDelaySeconds: 5
+              periodSeconds: 3
+              failureThreshold: 10
+            }
+            {
+              type: 'readiness'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              periodSeconds: 5
+              failureThreshold: 3
+            }
+          ]
         }
       ]
       scale: {
@@ -148,6 +169,27 @@ resource legacyMainframe 'Microsoft.App/containerApps@2023-05-01' = {
             {
               name: 'ASPNETCORE_URLS'
               value: 'http://+:8080'
+            }
+          ]
+          probes: [
+            {
+              type: 'startup'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              initialDelaySeconds: 5
+              periodSeconds: 3
+              failureThreshold: 10
+            }
+            {
+              type: 'readiness'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              periodSeconds: 5
+              failureThreshold: 3
             }
           ]
         }
@@ -194,6 +236,27 @@ resource vehicleService 'Microsoft.App/containerApps@2023-05-01' = {
               value: 'http://${legacyVehicleDb.name}'
             }
           ]
+          probes: [
+            {
+              type: 'startup'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              initialDelaySeconds: 5
+              periodSeconds: 3
+              failureThreshold: 10
+            }
+            {
+              type: 'readiness'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              periodSeconds: 5
+              failureThreshold: 3
+            }
+          ]
         }
       ]
       scale: {
@@ -236,6 +299,27 @@ resource insuranceService 'Microsoft.App/containerApps@2023-05-01' = {
             {
               name: 'LegacyServices__InsuranceMainframe'
               value: 'http://${legacyMainframe.name}'
+            }
+          ]
+          probes: [
+            {
+              type: 'startup'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              initialDelaySeconds: 5
+              periodSeconds: 3
+              failureThreshold: 10
+            }
+            {
+              type: 'readiness'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              periodSeconds: 5
+              failureThreshold: 3
             }
           ]
         }
@@ -289,6 +373,27 @@ resource customerService 'Microsoft.App/containerApps@2023-05-01' = {
             {
               name: 'Services__VehicleService'
               value: 'http://${vehicleService.name}'
+            }
+          ]
+          probes: [
+            {
+              type: 'startup'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              initialDelaySeconds: 5
+              periodSeconds: 3
+              failureThreshold: 10
+            }
+            {
+              type: 'readiness'
+              httpGet: {
+                path: '/health'
+                port: 8080
+              }
+              periodSeconds: 5
+              failureThreshold: 3
             }
           ]
         }
