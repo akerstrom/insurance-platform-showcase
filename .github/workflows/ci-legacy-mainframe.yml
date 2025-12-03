@@ -1,0 +1,32 @@
+name: CI - Legacy Insurance Mainframe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "legacy/InsuranceMainframe/**"
+      - ".github/workflows/ci-legacy-mainframe.yml"
+      - ".github/workflows/_build-dotnet.yml"
+      - ".github/workflows/_deploy-aca.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "legacy/InsuranceMainframe/**"
+
+jobs:
+  build:
+    uses: ./.github/workflows/_build-dotnet.yml
+    with:
+      service-name: InsuranceMainframe
+      dockerfile-path: legacy/InsuranceMainframe/Dockerfile
+      image-name: ips-legacy-mainframe
+    secrets: inherit
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    uses: ./.github/workflows/_deploy-aca.yml
+    with:
+      container-app-name: ips-legacy-mainframe
+      image-name: ips-legacy-mainframe
+    secrets: inherit

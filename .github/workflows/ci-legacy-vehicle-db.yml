@@ -1,0 +1,32 @@
+name: CI - Legacy Vehicle Database
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "legacy/VehicleDatabase/**"
+      - ".github/workflows/ci-legacy-vehicle-db.yml"
+      - ".github/workflows/_build-dotnet.yml"
+      - ".github/workflows/_deploy-aca.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "legacy/VehicleDatabase/**"
+
+jobs:
+  build:
+    uses: ./.github/workflows/_build-dotnet.yml
+    with:
+      service-name: VehicleDatabase
+      dockerfile-path: legacy/VehicleDatabase/Dockerfile
+      image-name: ips-legacy-vehicle-db
+    secrets: inherit
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    uses: ./.github/workflows/_deploy-aca.yml
+    with:
+      container-app-name: ips-legacy-vehicle-db
+      image-name: ips-legacy-vehicle-db
+    secrets: inherit

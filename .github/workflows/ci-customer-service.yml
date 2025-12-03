@@ -1,0 +1,35 @@
+name: CI - Customer Service
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/CustomerService/**"
+      - "tests/CustomerService.Tests/**"
+      - ".github/workflows/ci-customer-service.yml"
+      - ".github/workflows/_build-dotnet.yml"
+      - ".github/workflows/_deploy-aca.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/CustomerService/**"
+      - "tests/CustomerService.Tests/**"
+
+jobs:
+  build:
+    uses: ./.github/workflows/_build-dotnet.yml
+    with:
+      service-name: CustomerService
+      dockerfile-path: src/CustomerService/Dockerfile
+      test-project: tests/CustomerService.Tests
+      image-name: ips-customer-service
+    secrets: inherit
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    uses: ./.github/workflows/_deploy-aca.yml
+    with:
+      container-app-name: ips-customer-service
+      image-name: ips-customer-service
+    secrets: inherit
