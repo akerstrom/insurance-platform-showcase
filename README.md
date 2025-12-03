@@ -208,11 +208,16 @@ The `client/` directory contains a React/TypeScript frontend for customer insura
 - Display policy details including type, status, and monthly premium
 - Show vehicle information for car insurance policies
 - Policy summary with total premium calculation
+- Test customers info box with available demo personal numbers
+- Responsive design (mobile-first, 2-column grid on desktop)
+- Professional insurance/fintech styling with rounded corners and shadows
 
 ### Tech Stack
 
 - React 19 with TypeScript
 - Vite for build tooling
+- Tailwind CSS v4 for styling
+- Lucide React for icons (Car, PawPrint, Heart, Shield, etc.)
 - ESLint for code quality
 
 ### Running the Client

@@ -1,9 +1,16 @@
+import { Banknote, ClipboardList, User, Car, PawPrint, Heart } from 'lucide-react';
 import type { CustomerInsurance } from '../types/api';
 import { InsuranceType } from '../types/api';
 
 interface PolicySummaryProps {
   insurances: CustomerInsurance[];
 }
+
+const typeIcons = {
+  Car,
+  Pet: PawPrint,
+  Health: Heart,
+};
 
 export function PolicySummary({ insurances }: PolicySummaryProps) {
   const totalPremium = insurances.reduce((sum, ins) => sum + ins.premium, 0);
@@ -31,26 +38,28 @@ export function PolicySummary({ insurances }: PolicySummaryProps) {
   };
 
   return (
-    <aside>
-      <div>
-        <h3>Policy Overview</h3>
+    <aside className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm md:sticky md:top-24">
+      <div className="space-y-5">
+        <h3 className="text-lg font-semibold text-slate-900">Policy Overview</h3>
 
-        <div>
-          <div>
-            <span>Total Monthly Premium</span>
+        <div className="rounded-lg bg-blue-50 p-4">
+          <div className="flex items-center gap-2 text-blue-700">
+            <Banknote className="h-4 w-4" />
+            <span className="text-xs font-medium uppercase tracking-wide">Total Monthly Premium</span>
           </div>
-          <p>{formatCurrency(totalPremium)}</p>
-          <p>per month</p>
+          <p className="mt-2 text-3xl font-bold text-blue-700">{formatCurrency(totalPremium)}</p>
+          <p className="text-sm text-blue-600">per month</p>
         </div>
 
         <div>
-          <div>
-            <span>Active Policies</span>
+          <div className="flex items-center gap-2 text-slate-600">
+            <ClipboardList className="h-4 w-4" />
+            <span className="text-xs font-medium uppercase tracking-wide">Active Policies</span>
           </div>
 
-          <div>{insurances.length}</div>
+          <div className="mt-2 text-4xl font-bold text-slate-900">{insurances.length}</div>
 
-          <div>
+          <div className="mt-3 space-y-2">
             {policyBreakdown.car > 0 && (
               <PolicyTypeRow label="Car" count={policyBreakdown.car} />
             )}
@@ -63,11 +72,12 @@ export function PolicySummary({ insurances }: PolicySummaryProps) {
           </div>
         </div>
 
-        <div>
-          <div>
-            <span>Customer ID</span>
+        <div className="border-t border-slate-200 pt-4">
+          <div className="flex items-center gap-2 text-slate-600">
+            <User className="h-4 w-4" />
+            <span className="text-xs font-medium uppercase tracking-wide">Customer ID</span>
           </div>
-          <p>{formatPersonalNumber(insurances[0].pid)}</p>
+          <p className="mt-1 font-mono text-sm text-slate-900">{formatPersonalNumber(insurances[0].pid)}</p>
         </div>
       </div>
     </aside>
@@ -75,17 +85,20 @@ export function PolicySummary({ insurances }: PolicySummaryProps) {
 }
 
 interface PolicyTypeRowProps {
-  label: string;
+  label: 'Car' | 'Pet' | 'Health';
   count: number;
 }
 
 function PolicyTypeRow({ label, count }: PolicyTypeRowProps) {
+  const Icon = typeIcons[label];
+
   return (
-    <div>
-      <div>
-        <span>{label}</span>
+    <div className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2">
+      <div className="flex items-center gap-2">
+        <Icon className="h-4 w-4 text-slate-500" />
+        <span className="text-sm text-slate-700">{label}</span>
       </div>
-      <span>{count}</span>
+      <span className="font-semibold text-slate-900">{count}</span>
     </div>
   );
 }
