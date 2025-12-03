@@ -12,6 +12,7 @@ This integration layer consists of three microservices that abstract legacy syst
 
 ```mermaid
 flowchart LR
+    WEB[Web Client\n:5173]
     TP[ThreadPilot\nCore System]
 
     subgraph Integration Layer
@@ -26,6 +27,7 @@ flowchart LR
         end
     end
 
+    WEB --> C
     TP --> C
     C --> I
     C -->|enrich car insurances| V
@@ -196,11 +198,39 @@ Extends Insurance with vehicle details for car policies.
 | Health | $20 |
 | Car | $30 |
 
+## Web Client
+
+The `client/` directory contains a React/TypeScript frontend for customer insurance lookup.
+
+### Features
+
+- Search customer insurance policies by Swedish personal number (personnummer)
+- Display policy details including type, status, and monthly premium
+- Show vehicle information for car insurance policies
+- Policy summary with total premium calculation
+
+### Tech Stack
+
+- React 19 with TypeScript
+- Vite for build tooling
+- ESLint for code quality
+
+### Running the Client
+
+```bash
+cd client
+npm install
+npm run dev    # Development server on port 5173
+```
+
+The Vite dev server proxies API requests to the Customer Service on port 5164.
+
 ## Running Locally
 
 ### Prerequisites
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Node.js 20+](https://nodejs.org/) (for web client)
 
 ### Start Legacy Simulators
 
