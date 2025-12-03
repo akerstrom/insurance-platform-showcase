@@ -144,21 +144,22 @@ az containerapp logs show -n ips-customer-service -g ips-rg --follow
 ## Architecture
 
 ```
-Internet
+Internet (Browser)
     │
-    ▼
+    ├──────────────────────────────────┐
+    │                                  │
+    ▼                                  ▼
 ┌─────────────────────────────────────────────────┐
 │         Azure Container Apps Environment        │
 │                                                 │
 │  ┌─────┐                                        │
-│  │ web │ ◄─────────────── external (HTTPS)      │
-│  └──┬──┘     (ThreadPilot UI)                   │
-│     │                                           │
-│     ▼                                           │
+│  │ web │ ◄── external (HTTPS)                   │
+│  └─────┘     static files + /config.json        │
+│                                                 │
 │  ┌──────────────────┐                           │
 │  │ customer-service │ ◄── external (HTTPS)      │
-│  └────────┬─────────┘                           │
-│           │                                     │
+│  └────────┬─────────┘     direct CORS calls     │
+│           │                from browser         │
 │     ┌─────┴─────┐                               │
 │     ▼           ▼                               │
 │  ┌─────────┐ ┌─────────┐                        │
@@ -174,6 +175,11 @@ Internet
 │  └─────────┘ └─────────┘                        │
 └─────────────────────────────────────────────────┘
 ```
+
+**Key points:**
+- The browser loads static files from `ips-web` and fetches `/config.json` for API configuration
+- The browser calls `ips-customer-service` directly via CORS (no nginx proxy)
+- The web container injects `API_BASE_URL` at startup using `envsubst`
 
 ## Resource Sizing (Free Tier Optimized)
 
@@ -214,6 +220,22 @@ Services use a configurable HttpClient timeout (default: 30s) to handle cold sta
 ```
 
 This can be overridden via environment variables: `HttpClient__TimeoutSeconds=60`
+
+### Web Container Runtime Config
+
+The web container uses runtime configuration injection to locate the Customer Service API:
+
+1. **Template file**: `client/config.template.json` contains `${API_BASE_URL}` placeholder
+2. **Startup**: Container runs `envsubst` to generate `/usr/share/nginx/html/config.json`
+3. **Runtime**: Frontend fetches `/config.json` to get the API URL
+
+The `API_BASE_URL` environment variable is set by the Bicep template to point to the Customer Service FQDN:
+
+```
+API_BASE_URL=https://ips-customer-service.<env-domain>.azurecontainerapps.io
+```
+
+This pattern allows the same Docker image to work across different environments without rebuilding.
 
 ## Clean Up
 

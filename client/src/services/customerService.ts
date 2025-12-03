@@ -1,6 +1,5 @@
 import type { ApiError, CustomerInsurance } from '../types/api';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+import { getConfig } from '../config';
 
 export class ApiException extends Error {
   statusCode: number;
@@ -24,8 +23,9 @@ export class CustomerServiceClient {
     }
 
     try {
+      const config = await getConfig();
       const response = await fetch(
-        `${API_BASE_URL}/customers/${pid}/insurances`
+        `${config.apiBaseUrl}/customers/${pid}/insurances`
       );
 
       if (!response.ok) {

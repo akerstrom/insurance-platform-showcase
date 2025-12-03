@@ -131,6 +131,9 @@ client/
     main.tsx           # Entry point, CSS import
     App.tsx            # Root component with header
     index.css          # Tailwind directives
+    config.ts          # Runtime config loader (fetches /config.json)
+    services/
+      customerService.ts   # API client using runtime config
     components/
       CustomerSearch.tsx    # Search form + results grid
       InsuranceCard.tsx     # Policy card with type-based icon
@@ -139,7 +142,20 @@ client/
       ErrorMessage.tsx      # Error alert component
       EmptyState.tsx        # Empty state messaging
       LoadingSpinner.tsx    # Animated loading indicator
+  config.template.json     # Template for runtime config injection
+  nginx.conf               # Static file serving only (no proxy)
+  Dockerfile               # Uses envsubst to inject config at startup
 ```
+
+### API Configuration
+
+The frontend uses **runtime configuration** to locate the Customer Service API:
+
+1. **Development mode**: Uses `VITE_API_BASE_URL` env var (or empty for same-origin)
+2. **Production mode**: Fetches `/config.json` at startup
+3. **Container startup**: `envsubst` generates `/config.json` from template using `API_BASE_URL` env var
+
+This pattern allows the same Docker image to be deployed to different environments.
 
 ### Conventions
 
@@ -147,6 +163,7 @@ client/
 - **Lucide React** - Icons for insurance types (Car, PawPrint, Heart, Shield)
 - **Responsive design** - Mobile-first, 2-column grid on `md:` breakpoint
 - **Component patterns** - Functional components with TypeScript interfaces for props
+- **Direct CORS calls** - Frontend calls Customer Service directly (no nginx proxy)
 
 ### Running
 
