@@ -30,4 +30,5 @@ jobs:
             az containerapp update \
               --name ${{ inputs.container-app-name }} \
               --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} \
-              --image ${{ secrets.ACR_LOGIN_SERVER }}/${{ inputs.image-name }}:${{ github.sha }}
+              --image ${{ secrets.ACR_LOGIN_SERVER }}/${{ inputs.image-name }}:latest
+              
