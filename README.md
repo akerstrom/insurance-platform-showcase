@@ -214,11 +214,11 @@ The `client/` directory contains a React/TypeScript frontend for customer insura
 
 ### Tech Stack
 
-- React 19 with TypeScript
-- Vite for build tooling
+- React 19 with TypeScript 5.9
+- Vite 7 for build tooling
 - Tailwind CSS v4 for styling
 - Lucide React for icons (Car, PawPrint, Heart, Shield, etc.)
-- ESLint for code quality
+- ESLint 9 for code quality
 
 ### Configuration
 
@@ -240,6 +240,18 @@ npm run dev    # Development server on port 5173
 ```
 
 The client calls the Customer Service API directly via CORS. In development, configure `VITE_API_BASE_URL` if needed.
+
+## Services
+
+The `src/` directory contains three .NET microservices that form the integration layer.
+
+### Tech Stack
+
+- .NET 8 with ASP.NET Core
+- Minimal APIs (endpoint routing, not controllers)
+- C# records for immutable domain models
+- Typed HttpClients via dependency injection
+- xUnit and Moq for testing
 
 ## Running Locally
 
@@ -360,6 +372,42 @@ Each service workflow only runs when its source files change, enabling:
 - Faster CI feedback (only affected services are built)
 - Reduced resource usage
 
+## Developer Onboarding
+
+### Getting Started
+
+1. Clone the repo and install prerequisites (.NET 8 SDK, Node.js 20+)
+2. Run `dotnet restore` to fetch dependencies
+3. Start legacy simulators, then integration services (see [Running Locally](#running-locally))
+4. Run `dotnet test` to verify everything works
+
+### Project Structure
+
+| Directory | Purpose |
+|-----------|---------|
+| `src/` | Integration layer services (start here for business logic) |
+| `legacy/` | Mock backend simulators (reference implementations) |
+| `client/` | React frontend |
+| `tests/` | Unit and integration tests (mirrors `src/` structure) |
+| `.github/workflows/` | CI/CD pipelines |
+
+### Key Abstractions
+
+Each service follows the same pattern:
+
+- `Clients/I{Legacy}Client.cs` — Interface for legacy system
+- `Clients/{Legacy}Client.cs` — Anti-corruption layer implementation
+- `Models/` — Domain records (immutable C# records)
+- `Program.cs` — Minimal API endpoints and DI setup
+
+### Adding New Features
+
+| Change | Steps |
+|--------|-------|
+| New insurance type | Add to `InsuranceType` enum, update `InsuranceMainframeClient` translation |
+| New enrichment (e.g., property data) | Add client interface + implementation in CustomerService |
+| New service | Copy existing service structure, add to solution and docker-compose |
+
 ## API Specifications
 
 OpenAPI 3.1.0 specs in `/docs/api/`:
@@ -370,6 +418,13 @@ OpenAPI 3.1.0 specs in `/docs/api/`:
 
 ## Personal Reflection
 
-<!-- TODO: Peter to fill in -->
+### Similar Projects
+I’ve worked on several projects where we built modern REST APIs in front of older core systems, using clear bounded contexts and anti-corruption layers around mainframes and legacy databases. In those solutions we separated “orchestrator” services from domain/legacy wrappers, much like Customer vs. Insurance and Vehicle here. That background made it natural to design this as a small, service-oriented platform rather than a single monolithic API.
 
-*[Your 3-5 sentence reflection on similar experiences, challenges, and what you'd extend with more time]*
+### Challenging Aspects
+The most challenging part was dealing with the ambiguity in the assignment (especially what ThreadPilot is and how many services it should consist of) and turning that into a coherent, defensible architecture. It was also interesting to decide which responsibilities should live in the Customer service versus the pure legacy wrappers, and to think through error handling and integration behavior in a realistic way. Finally, I had to balance keeping the implementation simple enough for an assignment while still structuring it so it could realistically scale and be extended with new products and rules.
+
+### What I'd Extend with More Time
+- Add logging for all services to enable tracability.
+- Add security to services (e.g. API keys, OAuth, API Gateway)
+- Improve api documentation (e.g. Swagger)
