@@ -20,6 +20,12 @@ LABEL org.opencontainers.image.title="ips-web" \
 # Copy built application and nginx config
 COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
+COPY config.template.json /etc/nginx/config.template.json
+
+# Default API URL (override via environment variable)
+ENV API_BASE_URL=""
 
 EXPOSE 8080
-CMD ["nginx", "-g", "daemon off;"]
+
+# Generate config.json from template at startup, then run nginx
+CMD ["/bin/sh", "-c", "envsubst < /etc/nginx/config.template.json > /usr/share/nginx/html/config.json && nginx -g 'daemon off;'"]

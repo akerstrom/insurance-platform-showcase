@@ -27,7 +27,7 @@ flowchart LR
         end
     end
 
-    WEB --> C
+    WEB -->|direct API call via CORS| C
     TP --> C
     C --> I
     C -->|enrich car insurances| V
@@ -220,6 +220,17 @@ The `client/` directory contains a React/TypeScript frontend for customer insura
 - Lucide React for icons (Car, PawPrint, Heart, Shield, etc.)
 - ESLint for code quality
 
+### Configuration
+
+The web client uses runtime configuration to locate the Customer Service API:
+
+- **Development**: Uses `VITE_API_BASE_URL` environment variable (defaults to empty string for same-origin)
+- **Production**: Fetches `/config.json` at startup, which is generated from a template using `envsubst`
+
+Key files:
+- `client/src/config.ts` - Runtime config loader
+- `client/config.template.json` - Template for runtime config (uses `${API_BASE_URL}` placeholder)
+
 ### Running the Client
 
 ```bash
@@ -228,7 +239,7 @@ npm install
 npm run dev    # Development server on port 5173
 ```
 
-The Vite dev server proxies API requests to the Customer Service on port 5164.
+The client calls the Customer Service API directly via CORS. In development, configure `VITE_API_BASE_URL` if needed.
 
 ## Running Locally
 

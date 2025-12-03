@@ -333,7 +333,7 @@ resource insuranceService 'Microsoft.App/containerApps@2023-05-01' = {
   }
 }
 
-// Customer Service (external - main entry point)
+// Customer Service (external - main API entry point)
 resource customerService 'Microsoft.App/containerApps@2023-05-01' = {
   name: '${prefix}-customer-service'
   location: location
@@ -431,6 +431,12 @@ resource web 'Microsoft.App/containerApps@2023-05-01' = {
             cpu: json('0.25')
             memory: '0.5Gi'
           }
+          env: [
+            {
+              name: 'API_BASE_URL'
+              value: 'https://${customerService.properties.configuration.ingress.fqdn}'
+            }
+          ]
           probes: [
             {
               type: 'startup'
