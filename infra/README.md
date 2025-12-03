@@ -26,6 +26,7 @@ docker build -f src/InsuranceService/Dockerfile -t semodoshowcase.azurecr.io/ips
 docker build -f src/CustomerService/Dockerfile -t semodoshowcase.azurecr.io/ips-customer-service:latest .
 docker build -f legacy/VehicleDatabase/Dockerfile -t semodoshowcase.azurecr.io/ips-legacy-vehicle-db:latest .
 docker build -f legacy/InsuranceMainframe/Dockerfile -t semodoshowcase.azurecr.io/ips-legacy-mainframe:latest .
+docker build -f client/Dockerfile -t semodoshowcase.azurecr.io/ips-web:latest ./client
 ```
 
 ### 3. Push Images
@@ -36,6 +37,7 @@ docker push semodoshowcase.azurecr.io/ips-insurance-service:latest
 docker push semodoshowcase.azurecr.io/ips-customer-service:latest
 docker push semodoshowcase.azurecr.io/ips-legacy-vehicle-db:latest
 docker push semodoshowcase.azurecr.io/ips-legacy-mainframe:latest
+docker push semodoshowcase.azurecr.io/ips-web:latest
 ```
 
 ## Deployment
@@ -78,9 +80,17 @@ az deployment group create \
     containerRegistryPassword=$ACR_PASSWORD
 ```
 
-### 8. Get the Customer Service URL
+### 8. Get Application URLs
 
 ```bash
+# Get the web UI URL (main entry point)
+az deployment group show \
+  --resource-group ips-rg \
+  --name main \
+  --query properties.outputs.webUrl.value \
+  --output tsv
+
+# Get the customer service API URL (if needed for direct access)
 az deployment group show \
   --resource-group ips-rg \
   --name main \
@@ -113,6 +123,7 @@ az containerapp update -n ips-customer-service -g ips-rg \
   --image semodoshowcase.azurecr.io/ips-customer-service:latest
 
 # Or update all services
+az containerapp update -n ips-web -g ips-rg --image semodoshowcase.azurecr.io/ips-web:latest
 az containerapp update -n ips-customer-service -g ips-rg --image semodoshowcase.azurecr.io/ips-customer-service:latest
 az containerapp update -n ips-vehicle-service -g ips-rg --image semodoshowcase.azurecr.io/ips-vehicle-service:latest
 az containerapp update -n ips-insurance-service -g ips-rg --image semodoshowcase.azurecr.io/ips-insurance-service:latest
@@ -139,6 +150,11 @@ Internet
 ┌─────────────────────────────────────────────────┐
 │         Azure Container Apps Environment        │
 │                                                 │
+│  ┌─────┐                                        │
+│  │ web │ ◄─────────────── external (HTTPS)      │
+│  └──┬──┘     (ThreadPilot UI)                   │
+│     │                                           │
+│     ▼                                           │
 │  ┌──────────────────┐                           │
 │  │ customer-service │ ◄── external (HTTPS)      │
 │  └────────┬─────────┘                           │
@@ -163,6 +179,7 @@ Internet
 
 | Service | CPU | Memory | Min Replicas | Max Replicas |
 |---------|-----|--------|--------------|--------------|
+| web | 0.25 | 0.5Gi | 0 | 1 |
 | customer-service | 0.25 | 0.5Gi | 0 | 1 |
 | insurance-service | 0.25 | 0.5Gi | 0 | 1 |
 | vehicle-service | 0.25 | 0.5Gi | 0 | 1 |

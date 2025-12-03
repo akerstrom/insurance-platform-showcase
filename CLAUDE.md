@@ -24,7 +24,7 @@ LegacyVehicleDB  LegacyMainframe
 |---------|---------|--------|
 | VehicleService | Anti-corruption layer | Implemented |
 | InsuranceService | Anti-corruption layer | Implemented |
-| CustomerService | Orchestrator | Not started |
+| CustomerService | Orchestrator | Implemented |
 
 ## Code Conventions
 
@@ -119,9 +119,43 @@ Services read legacy system URLs from `appsettings.json`:
 
 Fallback to localhost defaults if not configured.
 
+## Web Client
+
+The `client/` directory contains a React/TypeScript frontend.
+
+### Structure
+
+```
+client/
+  src/
+    main.tsx           # Entry point, CSS import
+    App.tsx            # Root component with header
+    index.css          # Tailwind directives
+    components/
+      CustomerSearch.tsx    # Search form + results grid
+      InsuranceCard.tsx     # Policy card with type-based icon
+      VehicleDetails.tsx    # Nested card for car details
+      PolicySummary.tsx     # Sidebar with premium total
+      ErrorMessage.tsx      # Error alert component
+      EmptyState.tsx        # Empty state messaging
+      LoadingSpinner.tsx    # Animated loading indicator
+```
+
+### Conventions
+
+- **Tailwind CSS v4** - Utility-first styling, no separate CSS files per component
+- **Lucide React** - Icons for insurance types (Car, PawPrint, Heart, Shield)
+- **Responsive design** - Mobile-first, 2-column grid on `md:` breakpoint
+- **Component patterns** - Functional components with TypeScript interfaces for props
+
+### Running
+
+```bash
+cd client && npm run dev   # Dev server on port 5173
+```
+
 ## Next Steps
 
-CustomerService (port 5003) needs implementation:
-- Orchestrates calls to InsuranceService and VehicleService
-- Enriches car insurances with vehicle details
-- Should handle partial failures gracefully (return data even if vehicle lookup fails)
+- Add authentication/authorization layer
+- Implement additional insurance types
+- Add policy management (create, update, cancel)

@@ -1,0 +1,67 @@
+services:
+  # Legacy systems
+  ips-legacy-vehicle-db:
+    build:
+      context: .
+      dockerfile: legacy/VehicleDatabase/Dockerfile
+    networks:
+      - insurance-net
+
+  ips-legacy-mainframe:
+    build:
+      context: .
+      dockerfile: legacy/InsuranceMainframe/Dockerfile
+    networks:
+      - insurance-net
+
+  # Integration layer
+  ips-vehicle-service:
+    build:
+      context: .
+      dockerfile: src/VehicleService/Dockerfile
+    environment:
+      - LegacyServices__VehicleDatabase=http://ips-legacy-vehicle-db:8080
+    depends_on:
+      - ips-legacy-vehicle-db
+    networks:
+      - insurance-net
+
+  ips-insurance-service:
+    build:
+      context: .
+      dockerfile: src/InsuranceService/Dockerfile
+    environment:
+      - LegacyServices__InsuranceMainframe=http://ips-legacy-mainframe:8080
+    depends_on:
+      - ips-legacy-mainframe
+    networks:
+      - insurance-net
+
+  ips-customer-service:
+    build:
+      context: .
+      dockerfile: src/CustomerService/Dockerfile
+    environment:
+      - Services__VehicleService=http://ips-vehicle-service:8080
+      - Services__InsuranceService=http://ips-insurance-service:8080
+    depends_on:
+      - ips-vehicle-service
+      - ips-insurance-service
+    networks:
+      - insurance-net
+
+  # Frontend (ThreadPilot Web UI)
+  ips-web:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ips-customer-service
+    networks:
+      - insurance-net
+
+networks:
+  insurance-net:
+    driver: bridge
