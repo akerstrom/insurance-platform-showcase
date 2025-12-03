@@ -35,6 +35,7 @@ var images = {
   customerService: '${containerRegistry}/ips-customer-service:${imageTag}'
   legacyVehicleDb: '${containerRegistry}/ips-legacy-vehicle-db:${imageTag}'
   legacyMainframe: '${containerRegistry}/ips-legacy-mainframe:${imageTag}'
+  web: '${containerRegistry}/ips-web:${imageTag}'
 }
 
 // Log Analytics Workspace (required for Container Apps)
@@ -406,6 +407,62 @@ resource customerService 'Microsoft.App/containerApps@2023-05-01' = {
   }
 }
 
+// ThreadPilot Web UI (external - main user interface)
+resource web 'Microsoft.App/containerApps@2023-05-01' = {
+  name: '${prefix}-web'
+  location: location
+  properties: {
+    managedEnvironmentId: containerAppEnv.id
+    configuration: {
+      secrets: registrySecrets
+      registries: registryConfig
+      ingress: {
+        external: true
+        targetPort: 8080
+        transport: 'http'
+      }
+    }
+    template: {
+      containers: [
+        {
+          name: 'web'
+          image: images.web
+          resources: {
+            cpu: json('0.25')
+            memory: '0.5Gi'
+          }
+          probes: [
+            {
+              type: 'startup'
+              httpGet: {
+                path: '/'
+                port: 8080
+              }
+              initialDelaySeconds: 5
+              periodSeconds: 3
+              failureThreshold: 10
+            }
+            {
+              type: 'readiness'
+              httpGet: {
+                path: '/'
+                port: 8080
+              }
+              periodSeconds: 5
+              failureThreshold: 3
+            }
+          ]
+        }
+      ]
+      scale: {
+        minReplicas: 0
+        maxReplicas: 1
+      }
+    }
+  }
+}
+
 // Outputs
+output webUrl string = 'https://${web.properties.configuration.ingress.fqdn}'
 output customerServiceUrl string = 'https://${customerService.properties.configuration.ingress.fqdn}'
 output containerAppEnvironmentId string = containerAppEnv.id
