@@ -9,12 +9,14 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+var httpTimeoutSeconds = builder.Configuration.GetValue<int?>("HttpClient:TimeoutSeconds") ?? 30;
+
 builder.Services.AddHttpClient<IInsuranceServiceClient, InsuranceServiceClient>(client =>
 {
     var baseUrl = builder.Configuration["Services:InsuranceService"]
         ?? "http://localhost:5002";
     client.BaseAddress = new Uri(baseUrl);
-    client.Timeout = TimeSpan.FromSeconds(10);
+    client.Timeout = TimeSpan.FromSeconds(httpTimeoutSeconds);
 });
 
 builder.Services.AddHttpClient<IVehicleServiceClient, VehicleServiceClient>(client =>
@@ -22,7 +24,7 @@ builder.Services.AddHttpClient<IVehicleServiceClient, VehicleServiceClient>(clie
     var baseUrl = builder.Configuration["Services:VehicleService"]
         ?? "http://localhost:5001";
     client.BaseAddress = new Uri(baseUrl);
-    client.Timeout = TimeSpan.FromSeconds(10);
+    client.Timeout = TimeSpan.FromSeconds(httpTimeoutSeconds);
 });
 
 var app = builder.Build();

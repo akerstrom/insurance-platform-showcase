@@ -10,6 +10,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 var app = builder.Build();
 
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "legacy-mainframe" }));
+
 app.MapGet("/policies/{pid}", (string pid) =>
 {
     var policies = PolicyStore.GetByPid(pid);
