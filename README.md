@@ -321,6 +321,45 @@ The architecture supports future growth:
 - **Input validation** — All path parameters are validated using data annotations and model binding
 - **Rate limiting** — Use ASP.NET Core rate limiting middleware in production
 
+## CI/CD
+
+GitHub Actions workflows in `.github/workflows/` enable automated build, test, and deployment:
+
+### Workflow Structure
+
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| `ci-vehicle-service.yml` | Push/PR to `src/VehicleService/**` | Build, test, deploy Vehicle Service |
+| `ci-insurance-service.yml` | Push/PR to `src/InsuranceService/**` | Build, test, deploy Insurance Service |
+| `ci-customer-service.yml` | Push/PR to `src/CustomerService/**` | Build, test, deploy Customer Service |
+| `ci-legacy-vehicle-db.yml` | Push/PR to `legacy/VehicleDatabase/**` | Build, deploy Legacy Vehicle DB |
+| `ci-legacy-mainframe.yml` | Push/PR to `legacy/InsuranceMainframe/**` | Build, deploy Legacy Mainframe |
+| `ci-web.yml` | Push/PR to `client/**` | Build, lint, deploy Web Client |
+| `deploy-all.yml` | Manual | Deploy all services with optional infra |
+
+### Reusable Workflows
+
+- `_build-dotnet.yml` - .NET build, test, and Docker push
+- `_build-node.yml` - Node.js build, lint, type-check, and Docker push
+- `_deploy-aca.yml` - Deploy to Azure Container Apps
+
+### Required Secrets
+
+| Secret | Description |
+|--------|-------------|
+| `ACR_LOGIN_SERVER` | Azure Container Registry URL |
+| `ACR_USERNAME` | ACR service principal or admin username |
+| `ACR_PASSWORD` | ACR service principal or admin password |
+| `AZURE_CREDENTIALS` | Azure service principal JSON for deployment |
+| `AZURE_RESOURCE_GROUP` | Target resource group for Container Apps |
+
+### Path-Based Triggers
+
+Each service workflow only runs when its source files change, enabling:
+- Independent deployment of services
+- Faster CI feedback (only affected services are built)
+- Reduced resource usage
+
 ## API Specifications
 
 OpenAPI 3.1.0 specs in `/docs/api/`:

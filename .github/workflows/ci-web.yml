@@ -1,0 +1,31 @@
+name: CI - Web Client
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "client/**"
+      - ".github/workflows/ci-web.yml"
+      - ".github/workflows/_build-node.yml"
+      - ".github/workflows/_deploy-aca.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "client/**"
+
+jobs:
+  build:
+    uses: ./.github/workflows/_build-node.yml
+    with:
+      working-directory: client
+      image-name: ips-web
+    secrets: inherit
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    uses: ./.github/workflows/_deploy-aca.yml
+    with:
+      container-app-name: ips-web
+      image-name: ips-web
+    secrets: inherit

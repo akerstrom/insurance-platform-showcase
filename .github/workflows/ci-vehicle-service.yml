@@ -1,0 +1,35 @@
+name: CI - Vehicle Service
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/VehicleService/**"
+      - "tests/VehicleService.Tests/**"
+      - ".github/workflows/ci-vehicle-service.yml"
+      - ".github/workflows/_build-dotnet.yml"
+      - ".github/workflows/_deploy-aca.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/VehicleService/**"
+      - "tests/VehicleService.Tests/**"
+
+jobs:
+  build:
+    uses: ./.github/workflows/_build-dotnet.yml
+    with:
+      service-name: VehicleService
+      dockerfile-path: src/VehicleService/Dockerfile
+      test-project: tests/VehicleService.Tests
+      image-name: ips-vehicle-service
+    secrets: inherit
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    uses: ./.github/workflows/_deploy-aca.yml
+    with:
+      container-app-name: ips-vehicle-service
+      image-name: ips-vehicle-service
+    secrets: inherit

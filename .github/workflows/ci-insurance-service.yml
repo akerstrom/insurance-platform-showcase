@@ -1,0 +1,35 @@
+name: CI - Insurance Service
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/InsuranceService/**"
+      - "tests/InsuranceService.Tests/**"
+      - ".github/workflows/ci-insurance-service.yml"
+      - ".github/workflows/_build-dotnet.yml"
+      - ".github/workflows/_deploy-aca.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/InsuranceService/**"
+      - "tests/InsuranceService.Tests/**"
+
+jobs:
+  build:
+    uses: ./.github/workflows/_build-dotnet.yml
+    with:
+      service-name: InsuranceService
+      dockerfile-path: src/InsuranceService/Dockerfile
+      test-project: tests/InsuranceService.Tests
+      image-name: ips-insurance-service
+    secrets: inherit
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    uses: ./.github/workflows/_deploy-aca.yml
+    with:
+      container-app-name: ips-insurance-service
+      image-name: ips-insurance-service
+    secrets: inherit
