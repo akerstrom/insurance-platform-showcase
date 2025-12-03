@@ -14,7 +14,12 @@ builder.Services.AddHttpClient<IVehicleDatabaseClient, VehicleDatabaseClient>(cl
 
 var app = builder.Build();
 
-app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "healthy",
+    timestamp = DateTime.UtcNow,
+    version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "unknown"
+}));
 
 app.MapGet("/vehicles/{regnr}", async (string regnr, IVehicleDatabaseClient client, CancellationToken ct) =>
 {

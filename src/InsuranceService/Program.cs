@@ -20,7 +20,12 @@ builder.Services.AddHttpClient<IInsuranceMainframeClient, InsuranceMainframeClie
 
 var app = builder.Build();
 
-app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "healthy",
+    timestamp = DateTime.UtcNow,
+    version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "unknown"
+}));
 
 app.MapGet("/insurances/{pid}", async (string pid, IInsuranceMainframeClient client, CancellationToken ct) =>
 {

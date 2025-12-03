@@ -10,7 +10,13 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 var app = builder.Build();
 
-app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "legacy-mainframe" }));
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "healthy",
+    service = "legacy-mainframe",
+    timestamp = DateTime.UtcNow,
+    version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "unknown"
+}));
 
 app.MapGet("/policies/{pid}", (string pid) =>
 {

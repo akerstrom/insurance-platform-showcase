@@ -29,7 +29,12 @@ builder.Services.AddHttpClient<IVehicleServiceClient, VehicleServiceClient>(clie
 
 var app = builder.Build();
 
-app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
+app.MapGet("/health", () => Results.Ok(new
+{
+    status = "healthy",
+    timestamp = DateTime.UtcNow,
+    version = typeof(Program).Assembly.GetName().Version?.ToString() ?? "unknown"
+}));
 
 app.MapGet("/customers/{pid}/insurances", async (
     string pid,
