@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Blue rounded square background -->
+  <rect width="32" height="32" rx="6" fill="#2563EB"/>
+  <!-- White shield icon (Lucide Shield path, scaled and centered) -->
+  <path d="M16 5.5l-8 3.6v5.4c0 5.55 3.42 10.74 8 12 4.58-1.26 8-6.45 8-12V9.1l-8-3.6z"
+        fill="none"
+        stroke="white"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+</svg>
